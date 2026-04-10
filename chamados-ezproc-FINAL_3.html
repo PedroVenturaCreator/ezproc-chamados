@@ -1,0 +1,2192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EZPROC · Chamados</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #f4f6fb;
+    --surface: #ffffff;
+    --surface2: #f0f2f8;
+    --border: #e2e6f0;
+    --border2: #d0d6e8;
+    --text: #0f1523;
+    --muted: #8892aa;
+    --muted2: #5a6480;
+    --accent: #3a3fd4;
+    --accent2: #2730b8;
+    --accent-glow: rgba(58,63,212,0.15);
+    --indigo-hero: #3d4494;
+    --indigo-dark: #2a2f6b;
+    --red: #dc2626;
+    --orange: #ea580c;
+    --yellow: #d97706;
+    --green: #16a34a;
+    --purple: #7c3aed;
+    --font-head: 'Outfit', sans-serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --radius: 12px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 4px rgba(15,21,35,0.08);
+    --shadow-md: 0 4px 16px rgba(15,21,35,0.10);
+    --shadow-lg: 0 8px 32px rgba(15,21,35,0.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 14px; -webkit-font-smoothing: antialiased; }
+  
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #f0f2f8; }
+  ::-webkit-scrollbar-thumb { background: #c5cce0; border-radius: 3px; }
+
+  /* ── LAYOUT ── */
+  #app { display: flex; flex-direction: column; min-height: 100vh; }
+  
+  /* ── LOGIN SCREEN ── */
+  #login-screen {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 100vh; gap: 32px; padding: 40px;
+    background: linear-gradient(160deg, #3d4494 0%, #4a52c0 40%, #6366e8 70%, #f4f6fb 100%);
+    position: relative; overflow: hidden;
+  }
+  #login-screen::before {
+    content: ''; position: absolute; bottom: -60px; left: -80px;
+    width: 600px; height: 300px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 50% 60% 40% 50%;
+    transform: rotate(-8deg);
+  }
+  #login-screen::after {
+    content: ''; position: absolute; bottom: -40px; right: -60px;
+    width: 400px; height: 220px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 60% 40% 50% 50%;
+    transform: rotate(5deg);
+  }
+  .login-logo { display: flex; align-items: center; gap: 14px; }
+  .login-logo-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center; font-size: 24px;
+    box-shadow: 0 8px 32px var(--accent-glow);
+  }
+  .login-logo-text { font-family: var(--font-head); font-size: 28px; font-weight: 800; letter-spacing: -0.5px; color: #fff; }
+  .login-logo-text span { color: rgba(255,255,255,0.75); }
+  .login-card {
+    background: #fff; border: none;
+    border-radius: 20px; padding: 44px 48px; text-align: center; max-width: 420px; width: 100%;
+    box-shadow: 0 20px 60px rgba(15,21,35,0.18);
+    position: relative; z-index: 2;
+  }
+  .login-card h2 { font-family: var(--font-head); font-size: 24px; font-weight: 800; margin-bottom: 8px; color: var(--text); }
+  .login-card p { color: var(--muted2); line-height: 1.6; margin-bottom: 28px; font-size: 14px; }
+  .btn-microsoft {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: 15px 24px; border-radius: 100px;
+    background: #0f1523; border: none; color: #fff;
+    font-family: var(--font-head); font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; letter-spacing: 0.2px;
+    box-shadow: 0 4px 16px rgba(15,21,35,0.25);
+  }
+  .btn-microsoft:hover { background: #1e2a45; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(15,21,35,0.3); }
+  .login-note { font-size: 12px; color: var(--muted); margin-top: 16px; }
+
+  /* ── HEADER ── */
+  #header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 28px; height: 64px; background: #fff;
+    border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50;
+    box-shadow: var(--shadow-sm);
+  }
+  .header-left { display: flex; align-items: center; gap: 28px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-family: var(--font-head); font-weight: 800; font-size: 16px; }
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  .nav { display: flex; gap: 2px; }
+  .nav-btn {
+    padding: 7px 18px; border-radius: 100px; border: none; background: none;
+    color: var(--muted2); font-family: var(--font-body); font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .nav-btn.active { background: var(--accent); color: #fff; font-weight: 600; }
+  .nav-btn:hover:not(.active) { background: var(--surface2); color: var(--text); }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .user-chip {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 100px; padding: 4px 14px 4px 4px;
+  }
+  .user-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--indigo-dark));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800; color: #fff;
+  }
+  .user-name { font-size: 13px; font-weight: 600; color: var(--text); }
+
+  /* ── MAIN ── */
+  #main { flex: 1; padding: 28px 32px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 9px 20px; border-radius: 100px; border: none;
+    font-family: var(--font-body); font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .btn-primary { background: #0f1523; color: #fff; box-shadow: 0 2px 10px rgba(15,21,35,0.2); }
+  .btn-primary:hover { background: #1e2a45; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(15,21,35,0.25); }
+  .btn-secondary { background: #fff; color: var(--muted2); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+  .btn-secondary:hover { color: var(--text); border-color: var(--border2); box-shadow: var(--shadow-md); }
+  .btn-danger { background: #fff0f0; color: var(--red); border: 1px solid #fecaca; }
+  .btn-danger:hover { background: #fee2e2; }
+  .btn-sm { padding: 6px 14px; font-size: 12px; }
+  .btn-icon { padding: 7px 10px; border-radius: 100px; }
+
+  /* ── BADGE ── */
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 3px 9px; border-radius: 5px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── CARDS DE STAT ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px; }
+  .stat-card {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 20px 24px;
+    box-shadow: var(--shadow-sm); transition: box-shadow 0.2s;
+  }
+  .stat-card:hover { box-shadow: var(--shadow-md); }
+  .stat-label { font-size: 11px; color: var(--muted); font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 10px; }
+  .stat-value { font-family: var(--font-head); font-size: 36px; font-weight: 800; line-height: 1; }
+  .stat-sub { font-size: 11px; color: var(--muted); margin-top: 5px; }
+
+  /* ── SECTION HEADER ── */
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .section-title { font-family: var(--font-head); font-size: 20px; font-weight: 800; color: var(--text); }
+
+  /* ── TABELA ── */
+  .table-wrap { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: var(--surface2); }
+  th { padding: 12px 18px; text-align: left; font-size: 10px; color: var(--muted); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+  td { padding: 14px 18px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; color: var(--text); }
+  tbody tr { cursor: pointer; transition: background 0.12s; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #f8f9ff; }
+
+  /* ── FILTROS ── */
+  .filters { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .filter-input {
+    background: #fff; border: 1px solid var(--border); border-radius: 100px;
+    color: var(--text); font-family: var(--font-body); font-size: 13px;
+    padding: 8px 16px; outline: none; transition: all 0.15s;
+    box-shadow: var(--shadow-sm);
+  }
+  .filter-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  .filter-search { min-width: 260px; }
+  .filter-count { margin-left: auto; font-size: 12px; color: var(--muted); }
+
+  /* ── MODAL OVERLAY ── */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(15,21,35,0.45); z-index: 200;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    backdrop-filter: blur(6px);
+  }
+  .modal {
+    background: #fff; border: none;
+    border-radius: 20px; padding: 36px 40px;
+    width: 100%; max-width: 660px; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(15,21,35,0.18);
+    animation: slideUp 0.2s ease;
+  }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; }
+  .modal-title { font-family: var(--font-head); font-size: 20px; font-weight: 800; }
+  .modal-sub { font-size: 13px; color: var(--muted2); margin-top: 3px; }
+  .close-btn { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; line-height: 1; padding: 4px; border-radius: 6px; }
+  .close-btn:hover { color: var(--text); background: var(--surface2); }
+
+  /* ── FORM ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .form-full { grid-column: 1 / -1; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  label.form-label { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; }
+  .form-control {
+    background: var(--surface2); border: 1.5px solid var(--border); border-radius: var(--radius);
+    color: var(--text); font-family: var(--font-body); font-size: 14px;
+    padding: 10px 14px; outline: none; width: 100%; transition: all 0.15s;
+  }
+  .form-control:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px var(--accent-glow); }
+  textarea.form-control { resize: vertical; min-height: 88px; }
+  .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border); }
+
+  /* ── DETAIL PANEL ── */
+  .detail-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+  .detail-meta-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+  .detail-meta-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.6px; }
+  .detail-meta-value { font-size: 14px; font-weight: 600; color: var(--text); }
+  .detail-desc {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px; font-size: 13px; color: var(--muted2); line-height: 1.7; margin-bottom: 20px;
+  }
+
+  /* ── OBSERVAÇÕES / HISTÓRICO ── */
+  .obs-section { margin-top: 20px; }
+  .obs-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
+  .obs-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+  .obs-item {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 13px 16px;
+  }
+  .obs-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .obs-item-author { font-size: 12px; font-weight: 700; color: var(--accent); }
+  .obs-item-date { font-size: 11px; color: var(--muted); }
+  .obs-item-text { font-size: 13px; color: var(--muted2); line-height: 1.6; }
+  .obs-input-wrap { display: flex; flex-direction: column; gap: 8px; }
+
+  /* ── RESPONSÁVEL VIEW ── */
+  .my-tasks-header {
+    background: linear-gradient(135deg, var(--indigo-hero), var(--indigo-dark));
+    border: none; border-radius: var(--radius-lg);
+    padding: 24px 28px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px;
+    box-shadow: var(--shadow-md);
+  }
+  .my-tasks-count { color: #fff !important; }
+  .my-tasks-label { color: rgba(255,255,255,0.75) !important; }
+  .my-tasks-icon { font-size: 32px; }
+  .my-tasks-count { font-family: var(--font-head); font-size: 28px; font-weight: 800; color: var(--accent); }
+  .my-tasks-label { font-size: 13px; color: var(--muted2); margin-top: 2px; }
+
+  /* ── PRAZO INDICATOR ── */
+  .prazo-bar-wrap { margin-top: 8px; }
+  .prazo-bar-bg { background: var(--border); border-radius: 4px; height: 4px; overflow: hidden; }
+  .prazo-bar-fill { height: 4px; border-radius: 4px; transition: width 0.3s; }
+
+  /* ── COLABORADORES CHART ── */
+  .colab-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+  .colab-card {
+    background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 20px 16px; text-align: center;
+    box-shadow: var(--shadow-sm); transition: box-shadow 0.2s;
+  }
+  .colab-card:hover { box-shadow: var(--shadow-md); }
+  .colab-avatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent2), #1a3566);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-head); font-size: 20px; font-weight: 800; color: #fff;
+    margin: 0 auto 12px; border: 2px solid var(--border2);
+  }
+  .colab-name { font-weight: 700; font-size: 14px; margin-bottom: 10px; }
+  .colab-num { font-family: var(--font-head); font-size: 30px; font-weight: 800; color: var(--accent); line-height: 1; }
+  .colab-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* ── EMPTY STATE ── */
+  .empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty-icon { font-size: 44px; margin-bottom: 12px; }
+  .empty-text { font-size: 15px; }
+  .empty-sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+  /* ── LOADING / TOAST ── */
+  #toast {
+    position: fixed; bottom: 28px; right: 28px; z-index: 999;
+    background: #0f1523; border: none;
+    border-radius: 100px; padding: 13px 22px;
+    font-size: 13px; font-weight: 600; color: #fff;
+    box-shadow: 0 8px 32px rgba(15,21,35,0.3); transform: translateY(80px);
+    transition: transform 0.3s ease; pointer-events: none;
+  }
+  #toast.show { transform: translateY(0); }
+  #spinner {
+    position: fixed; inset: 0; background: rgba(8,12,20,0.7); z-index: 500;
+    display: none; align-items: center; justify-content: center;
+  }
+  #spinner.show { display: flex; }
+  .spin { width: 36px; height: 36px; border: 3px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* CONFIG BANNER */
+  #config-banner {
+    background: rgba(201,162,39,0.12); border: 1px solid rgba(201,162,39,0.3);
+    border-radius: var(--radius); padding: 12px 18px; margin-bottom: 20px;
+    font-size: 13px; color: #c9a227; display: none; align-items: center; gap: 10px;
+  }
+  #config-banner.show { display: flex; }
+
+  /* ── NOTIFICAÇÕES ── */
+  .notif-btn { position: relative; }
+  .notif-badge {
+    position: absolute; top: -4px; right: -4px;
+    background: var(--red); color: #fff;
+    border-radius: 50%; width: 18px; height: 18px;
+    font-size: 10px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--bg); pointer-events: none;
+  }
+  .notif-panel {
+    position: fixed; top: 72px; right: 16px; z-index: 300;
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius-lg); width: 360px;
+    box-shadow: var(--shadow-lg);
+    max-height: 480px; overflow-y: auto;
+    animation: slideUp 0.2s ease;
+  }
+  .notif-header {
+    padding: 16px 20px 12px; font-size: 13px; font-weight: 700;
+    color: var(--muted); letter-spacing: 0.8px; text-transform: uppercase;
+    border-bottom: 1px solid var(--border); display: flex;
+    justify-content: space-between; align-items: center;
+    position: sticky; top: 0; background: #fff;
+  }
+  .notif-item {
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    cursor: pointer; transition: background 0.12s;
+  }
+  .notif-item:hover { background: #f8f9ff; }
+  .notif-item.unread { border-left: 3px solid var(--accent); }
+  .notif-item-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .notif-item-sub { font-size: 12px; color: var(--muted2); line-height: 1.5; }
+  .notif-item-time { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .notif-empty { padding: 32px 20px; text-align: center; color: var(--muted); font-size: 13px; }
+
+  /* ── RISCO & CONFIGURAÇÕES ── */
+  .risco-card {
+    border-radius: var(--radius-lg); padding: 20px 24px;
+    margin-bottom: 20px; display: none;
+  }
+  .risco-card.show { display: block; }
+  .risco-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .risco-card-title {
+    font-family: var(--font-head); font-size: 15px; font-weight: 800;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .risco-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border-radius: var(--radius);
+    margin-bottom: 8px; cursor: pointer; transition: all 0.15s;
+  }
+  .risco-item:last-child { margin-bottom: 0; }
+  .risco-item-info { display: flex; flex-direction: column; gap: 2px; }
+  .risco-item-tarefa { font-size: 13px; font-weight: 600; }
+  .risco-item-meta { font-size: 11px; }
+  .risco-item-prazo { font-size: 12px; font-weight: 700; white-space: nowrap; }
+
+  .config-panel {
+    position: fixed; inset: 0; background: rgba(15,21,35,0.45);
+    z-index: 200; display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+  .config-box {
+    background: #fff; border-radius: 20px; padding: 36px 40px;
+    width: 100%; max-width: 460px;
+    box-shadow: 0 24px 64px rgba(15,21,35,0.18);
+    animation: slideUp 0.2s ease;
+  }
+  .config-box h3 { font-family: var(--font-head); font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+  .config-box p  { font-size: 13px; color: var(--muted2); margin-bottom: 24px; line-height: 1.6; }
+  .config-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
+  .config-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; }
+
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: repeat(3, 1fr); }
+    .colab-grid { grid-template-columns: repeat(3, 1fr); }
+    .form-grid { grid-template-columns: 1fr; }
+    .detail-meta { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ CONFIGURAÇÃO — EDITE AQUI ══════════════════════════════════════════════
+     Preencha SUPABASE_URL e SUPABASE_KEY após criar o projeto no Supabase.
+     Instruções completas no README abaixo.
+═══════════════════════════════════════════════════════════════════════════════ -->
+<script>
+const CONFIG = {
+  // 1. URL do seu projeto Supabase (ex: https://xyzxyz.supabase.co)
+  SUPABASE_URL: "https://buqlratljuiybiswysav.supabase.co",
+
+  // 2. Chave pública (anon key) do Supabase — aparece em Project Settings > API
+  SUPABASE_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1cWxyYXRsanVpeWJpc3d5c2F2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NzM4MTEsImV4cCI6MjA5MTM0OTgxMX0.493oh0Xed_VyllIzv5i4XydMOQaEIhk0JaGgIpgsd_8",
+
+  // Email do administrador principal (sempre terá permissão de admin)
+  ADMIN_EMAIL: "pedro.ventura@atlasinovacoes.com.br"
+};
+
+// ── Helpers Supabase REST ────────────────────────────────────────────────────
+const SB = {
+  headers: () => ({
+    'apikey': CONFIG.SUPABASE_KEY,
+    'Authorization': `Bearer ${CONFIG.SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  }),
+  url: (table, query='') => `${CONFIG.SUPABASE_URL}/rest/v1/${table}${query}`,
+};
+</script>
+
+<!-- ══ APP ════════════════════════════════════════════════════════════════════ -->
+<div id="app">
+
+  <!-- LOGIN -->
+  <div id="login-screen">
+    <div class="login-logo" style="text-align:center;position:relative;z-index:2;">
+      <div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:6px;">
+        <div style="font-family:var(--font-head);font-size:38px;font-weight:800;letter-spacing:-1px;color:#fff;">EZPR</div>
+        <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin:0 1px;">
+          <circle cx="17" cy="6" r="4" fill="#FF6B6B"/>
+          <circle cx="28" cy="11.5" r="4" fill="#FFB347"/>
+          <circle cx="28" cy="22.5" r="4" fill="#4CAF50"/>
+          <circle cx="17" cy="28" r="4" fill="#2196F3"/>
+          <circle cx="6" cy="22.5" r="4" fill="#9C27B0"/>
+          <circle cx="6" cy="11.5" r="4" fill="#FF4081"/>
+        </svg>
+        <div style="font-family:var(--font-head);font-size:38px;font-weight:800;letter-spacing:-1px;color:#fff;">C</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:3px;text-transform:uppercase;">Operações · Chamados</div>
+    </div>
+    <!-- CARD LOGIN -->
+    <div class="login-card" id="card-login">
+      <h2>Entrar</h2>
+      <p>Acesse com seu email e senha cadastrados.</p>
+      <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
+        <div class="form-group">
+          <label class="form-label" style="display:block;margin-bottom:6px;">Email</label>
+          <input id="login-email" type="email" class="form-control" placeholder="seu@email.com" style="font-size:14px;" onkeydown="if(event.key==='Enter')signIn()"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="display:block;margin-bottom:6px;">Senha</label>
+          <input id="login-senha" type="password" class="form-control" placeholder="••••••••" style="font-size:14px;" onkeydown="if(event.key==='Enter')signIn()"/>
+        </div>
+      </div>
+      <button class="btn-microsoft" onclick="signIn()" style="margin-bottom:12px;">
+        Entrar no Sistema
+      </button>
+      <button onclick="mostrarCadastro()" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;text-decoration:underline;font-family:var(--font-body);">
+        Não tem conta? Cadastre-se
+      </button>
+      <div class="login-note" style="margin-top:14px;">⚡ Dados salvos em: Supabase · São Paulo</div>
+    </div>
+
+    <!-- CARD CADASTRO -->
+    <div class="login-card" id="card-cadastro" style="display:none;">
+      <h2>Criar Conta</h2>
+      <p>Cadastre-se para acessar o sistema de chamados.</p>
+      <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
+        <div class="form-group">
+          <label class="form-label" style="display:block;margin-bottom:6px;">Seu Nome Completo *</label>
+          <input id="cad-nome" type="text" class="form-control" placeholder="Ex: Pedro Ventura" style="font-size:14px;"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="display:block;margin-bottom:6px;">Email *</label>
+          <input id="cad-email" type="email" class="form-control" placeholder="seu@email.com" style="font-size:14px;"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="display:block;margin-bottom:6px;">Senha * <span style="color:var(--muted);font-weight:400;">(mínimo 6 caracteres)</span></label>
+          <input id="cad-senha" type="password" class="form-control" placeholder="••••••••" style="font-size:14px;"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="display:block;margin-bottom:6px;">Confirmar Senha *</label>
+          <input id="cad-senha2" type="password" class="form-control" placeholder="••••••••" style="font-size:14px;" onkeydown="if(event.key==='Enter')cadastrar()"/>
+        </div>
+      </div>
+      <button class="btn-microsoft" onclick="cadastrar()" style="margin-bottom:12px;">
+        Criar Minha Conta
+      </button>
+      <button onclick="mostrarLogin()" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;text-decoration:underline;font-family:var(--font-body);">
+        Já tenho conta. Entrar
+      </button>
+      <div class="login-note" style="margin-top:14px;">⚡ Dados salvos em: Supabase · São Paulo</div>
+    </div>
+  </div>
+
+  <!-- MAIN APP (hidden until login) -->
+  <div id="main-app" style="display:none; flex-direction:column; min-height:100vh;">
+    <div id="header">
+      <div class="header-left">
+        <div class="logo" style="display:flex;align-items:center;gap:3px;">
+          <div style="font-family:var(--font-head);font-size:19px;font-weight:800;letter-spacing:-0.5px;color:var(--text);">EZPR</div>
+          <svg width="16" height="16" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="17" cy="6" r="4" fill="#FF6B6B"/>
+            <circle cx="28" cy="11.5" r="4" fill="#FFB347"/>
+            <circle cx="28" cy="22.5" r="4" fill="#4CAF50"/>
+            <circle cx="17" cy="28" r="4" fill="#2196F3"/>
+            <circle cx="6" cy="22.5" r="4" fill="#9C27B0"/>
+            <circle cx="6" cy="11.5" r="4" fill="#FF4081"/>
+          </svg>
+          <div style="font-family:var(--font-head);font-size:19px;font-weight:800;letter-spacing:-0.5px;color:var(--text);">C</div>
+          <div style="width:1px;height:20px;background:var(--border2);margin:0 8px;"></div>
+          <div style="font-size:12px;font-weight:600;color:var(--muted);">Operações</div>
+        </div>
+        <nav class="nav">
+          <button class="nav-btn active" onclick="setTab('dashboard')" id="tab-dashboard">Dashboard</button>
+          <button class="nav-btn" onclick="setTab('chamados')" id="tab-chamados">Todos os Chamados</button>
+          <button class="nav-btn" onclick="setTab('minhas')" id="tab-minhas">Minhas Tarefas</button>
+          <button class="nav-btn" onclick="setTab('colaboradores')" id="tab-colaboradores">⚙ Colaboradores</button>
+        </nav>
+      </div>
+      <div class="header-right">
+        <button class="btn btn-primary" onclick="abrirModalChamado()">
+          <span>+</span> Abrir Chamado
+        </button>
+        <div class="user-chip">
+          <div class="user-avatar" id="user-avatar">?</div>
+          <span class="user-name" id="user-name">...</span>
+        </div>
+        <button class="btn btn-secondary btn-sm btn-icon notif-btn" onclick="toggleNotifPanel()" id="btn-notif" title="Notificações" style="position:relative;">
+          🔔
+          <span class="notif-badge" id="notif-badge" style="display:none;">0</span>
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="exportCSV()">⬇ CSV</button>
+        <button class="btn btn-secondary btn-sm btn-icon" onclick="signOut()" title="Sair">↩</button>
+      </div>
+      <!-- PAINEL DE NOTIFICAÇÕES -->
+      <div class="notif-panel" id="notif-panel" style="display:none;">
+        <div class="notif-header">
+          <span>🔔 Notificações</span>
+          <button onclick="marcarTodasLidas()" style="background:none;border:none;color:var(--accent);font-size:12px;cursor:pointer;">Marcar todas como lidas</button>
+        </div>
+        <div id="notif-lista"></div>
+      </div>
+    </div>
+
+    <div id="main">
+
+      <!-- DASHBOARD -->
+      <div id="view-dashboard">
+        <div class="section-header" style="margin-bottom:16px;">
+          <div class="section-title">Visão Geral</div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <select class="filter-input" id="dash-filtro-colab" onchange="renderTudo()" style="min-width:160px;">
+              <option value="">Todos os colaboradores</option>
+            </select>
+            <select class="filter-input" id="dash-filtro-status" onchange="renderTudo()">
+              <option value="">Todos os status</option>
+              <option>Aberto</option><option>Em andamento</option><option>Concluído</option><option>Cancelado</option>
+            </select>
+            <button class="btn btn-secondary btn-sm" onclick="abrirConfigAlertas()" title="Configurar alertas de prazo">⚙️ Alertas</button>
+            <button class="btn btn-secondary btn-sm" id="btn-refresh-indicator" onclick="carregarChamados()">↻ Atualizar</button>
+          </div>
+        </div>
+
+        <!-- CARD DE RISCO -->
+        <div class="risco-card" id="risco-card"></div>
+
+        <div class="stats-grid" id="stats-grid"></div>
+        <div class="colab-grid" id="colab-grid"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="table-wrap">
+            <div style="padding:18px 20px 14px;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:0.8px;text-transform:uppercase;border-bottom:1px solid var(--border);">Por Importância</div>
+            <div id="chart-imp" style="padding:16px 20px;"></div>
+          </div>
+          <div class="table-wrap">
+            <div style="padding:18px 20px 14px;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:0.8px;text-transform:uppercase;border-bottom:1px solid var(--border);">Por Status</div>
+            <div id="chart-status" style="padding:16px 20px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLABORADORES -->
+      <div id="view-colaboradores" style="display:none;">
+        <div class="section-header">
+          <div class="section-title">👥 Gestão de Usuários</div>
+        </div>
+        <div style="background:rgba(45,107,228,0.08);border:1px solid rgba(45,107,228,0.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--muted2);">
+          👑 Apenas administradores podem alterar status, permissões e excluir usuários. Novos usuários aparecem aqui após se cadastrarem.
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Permissão</th><th>Status</th><th>Recebidos</th><th>Abertos</th><th>Cadastrado em</th><th></th></tr></thead>
+            <tbody id="colab-tabela-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TODOS CHAMADOS -->
+      <div id="view-chamados" style="display:none;">
+        <div class="section-header">
+          <div class="section-title">Todos os Chamados</div>
+        </div>
+        <div class="filters">
+          <input class="filter-input filter-search" type="text" id="f-busca" placeholder="🔍 Buscar por ID, tarefa, solicitante..." oninput="renderTabela()"/>
+          <select class="filter-input" id="f-status" onchange="renderTabela()">
+            <option value="">Status</option>
+            <option>Aberto</option><option>Em andamento</option><option>Concluído</option><option>Cancelado</option>
+          </select>
+          <select class="filter-input" id="f-resp" onchange="renderTabela()">
+            <option value="">Responsável</option>
+          </select>
+          <select class="filter-input" id="f-imp" onchange="renderTabela()">
+            <option value="">Importância</option>
+            <option>Urgente</option><option>Alta</option><option>Média</option><option>Baixa</option>
+          </select>
+          <span class="filter-count" id="filter-count"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th><th>Tarefa</th><th>Solicitante</th><th>Responsável</th>
+                <th>Importância</th><th>Frequência</th><th>Prazo</th><th>Última Atualiz.</th><th>Status</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="tabela-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- MINHAS TAREFAS -->
+      <div id="view-minhas" style="display:none;">
+        <div class="section-header">
+          <div class="section-title">Minhas Tarefas</div>
+        </div>
+        <div class="my-tasks-header" id="my-tasks-header"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th><th>Tarefa</th><th>Solicitante</th><th>Importância</th>
+                <th>Prazo / Progresso</th><th>Última Atualiz.</th><th>Status</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="minhas-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CRIAR/EDITAR CHAMADO -->
+<div id="modal-chamado" class="overlay" style="display:none;">
+  <div class="modal" style="max-width:680px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-chamado-title">📋 Abrir Chamado</div>
+        <div class="modal-sub">Preencha as informações da tarefa</div>
+      </div>
+      <button class="close-btn" onclick="fecharModal('modal-chamado')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Solicitante *</label>
+        <select id="f-solicitante" class="form-control">
+          <option value="">Selecione...</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Responsável *</label>
+        <select id="f-responsavel" class="form-control">
+          <option value="">Selecione...</option>
+        </select>
+      </div>
+      <div class="form-group form-full">
+        <label class="form-label">Tarefa *</label>
+        <input id="f-tarefa" type="text" class="form-control" placeholder="Nome da atividade..."/>
+      </div>
+      <div class="form-group form-full">
+        <label class="form-label">Descrição</label>
+        <textarea id="f-descricao" class="form-control" placeholder="Detalhe o que precisa ser feito..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Importância *</label>
+        <select id="f-importancia" class="form-control">
+          <option>Urgente</option><option>Alta</option><option selected>Média</option><option>Baixa</option>
+        </select>
+      </div>
+      <div class="form-group" style="display:flex;align-items:flex-end;padding-bottom:2px;">
+        <div style="background:rgba(45,107,228,0.1);border:1px solid rgba(45,107,228,0.25);border-radius:var(--radius);padding:10px 14px;font-size:13px;color:var(--muted2);width:100%;">
+          🔒 Status definido pelo responsável
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Frequência *</label>
+        <select id="f-frequencia" class="form-control" onchange="toggleRecorrencia()">
+          <option>Única</option><option>Diária</option><option>Semanal</option><option>Mensal</option>
+        </select>
+      </div>
+      <div class="form-group" id="recorrencia-wrap" style="display:none;">
+        <label class="form-label">Recorrência</label>
+        <select id="f-recorrencia" class="form-control"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Data de Solicitação</label>
+        <input id="f-data-solic" type="date" class="form-control"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Data Prazo</label>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input id="f-data-prazo" type="date" class="form-control" style="flex:1;"/>
+            <label style="display:flex;align-items:center;gap:6px;white-space:nowrap;cursor:pointer;font-size:13px;color:var(--muted2);">
+              <input type="checkbox" id="f-prazo-indet" onchange="togglePrazoIndet()" style="accent-color:var(--accent);width:15px;height:15px;"/> Indeterminado
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="fecharModal('modal-chamado')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarChamado()" id="btn-salvar-chamado">Abrir Chamado</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALHE / OBSERVAÇÕES -->
+<div id="modal-detalhe" class="overlay" style="display:none;">
+  <div class="modal" style="max-width:620px;">
+    <div class="modal-header">
+      <div>
+        <div style="font-size:11px;color:var(--accent);font-weight:700;letter-spacing:1px;" id="d-id"></div>
+        <div class="modal-title" id="d-tarefa" style="margin-top:4px;"></div>
+      </div>
+      <button class="close-btn" onclick="fecharModal('modal-detalhe')">✕</button>
+    </div>
+    <div id="d-badges" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;"></div>
+    <div class="detail-desc" id="d-desc"></div>
+    <div class="detail-meta" id="d-meta"></div>
+
+    <!-- BARRA DE PROGRESSO DO PRAZO -->
+    <div id="d-prazo-bar-wrap" style="margin-bottom:20px;"></div>
+
+    <!-- OBSERVAÇÕES / HISTÓRICO -->
+    <div class="obs-section">
+      <div class="obs-title">📝 Histórico de Atualizações</div>
+      <div class="obs-list" id="obs-list"></div>
+      <div class="obs-input-wrap">
+        <textarea id="nova-obs" class="form-control" rows="3" placeholder="Adicione uma observação ou atualização sobre o andamento..."></textarea>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <select id="obs-status" class="form-control" style="max-width:200px;">
+            <option value="">Manter status atual</option>
+            <option>Aberto</option><option>Em andamento</option><option>Concluído</option><option>Cancelado</option>
+          </select>
+          <button class="btn btn-primary" onclick="adicionarObs()" style="flex:1;">💬 Salvar Atualização</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+      <button class="btn btn-secondary btn-sm" onclick="enviarEmailChamado()" id="btn-email-detalhe">📧 Enviar por Email</button>
+      <button class="btn btn-secondary btn-sm" onclick="editarChamadoAtual()">✏️ Editar</button>
+      <button class="btn btn-danger btn-sm" onclick="deletarChamadoAtual()" id="btn-excluir-chamado">🗑️ Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR USUÁRIO (admin) -->
+<div id="modal-colaborador" class="overlay" style="display:none;">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-colab-title">✏️ Editar Usuário</div>
+        <div class="modal-sub" id="modal-colab-sub">Altere os dados do usuário</div>
+      </div>
+      <button class="close-btn" onclick="fecharModal('modal-colaborador')">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="form-group">
+        <label class="form-label">Nome *</label>
+        <input id="colab-nome" type="text" class="form-control" placeholder="Nome completo"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input id="colab-email" type="email" class="form-control" placeholder="email@empresa.com.br"/>
+      </div>
+      <div class="form-group" id="colab-status-wrap">
+        <label class="form-label">Status</label>
+        <select id="colab-status" class="form-control">
+          <option value="Ativo">✅ Ativo — pode receber chamados</option>
+          <option value="Ferias">🌴 Férias — temporariamente indisponível</option>
+          <option value="Inativo">🔴 Inativo — não recebe novos chamados</option>
+        </select>
+      </div>
+      <div class="form-group" id="colab-admin-wrap">
+        <label class="form-label">Permissão de Administrador</label>
+        <select id="colab-admin" class="form-control">
+          <option value="false">👤 Usuário comum</option>
+          <option value="true">👑 Administrador</option>
+        </select>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Admins podem gerenciar todos os usuários e alterar permissões.</div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="fecharModal('modal-colaborador')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarColaborador()" id="btn-salvar-colab">Salvar Alterações</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIG ALERTAS -->
+<div class="config-panel" id="config-alertas-panel" style="display:none;">
+  <div class="config-box">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+      <div>
+        <h3>⏰ Configurar Alertas de Prazo</h3>
+        <p>Defina quando o responsável deve ser avisado por email antes do vencimento de uma tarefa.</p>
+      </div>
+      <button onclick="fecharConfigAlertas()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);">✕</button>
+    </div>
+    <div class="config-row">
+      <label class="config-label">Alertar com quantos dias de antecedência?</label>
+      <select id="config-dias-alerta" class="form-control">
+        <option value="1">1 dia antes</option>
+        <option value="2">2 dias antes</option>
+        <option value="3" selected>3 dias antes</option>
+        <option value="5">5 dias antes</option>
+        <option value="7">7 dias antes</option>
+        <option value="10">10 dias antes</option>
+        <option value="15">15 dias antes</option>
+      </select>
+    </div>
+    <div class="config-row">
+      <label class="config-label">Mostrar no card de risco do dashboard?</label>
+      <select id="config-risco-dias" class="form-control">
+        <option value="3">Tarefas vencendo em até 3 dias</option>
+        <option value="5">Tarefas vencendo em até 5 dias</option>
+        <option value="7" selected>Tarefas vencendo em até 7 dias</option>
+        <option value="14">Tarefas vencendo em até 14 dias</option>
+      </select>
+    </div>
+    <div class="config-row">
+      <label class="config-label">Alertas ativos?</label>
+      <select id="config-alertas-ativo" class="form-control">
+        <option value="true" selected>✅ Sim — verificar ao abrir o sistema</option>
+        <option value="false">❌ Não — desativar alertas</option>
+      </select>
+    </div>
+    <div style="background:#f0f2f8;border-radius:var(--radius);padding:14px;margin-bottom:24px;font-size:12px;color:var(--muted2);line-height:1.6;">
+      💡 O sistema verifica os prazos toda vez que alguém abre o app e abre o Outlook com os emails de alerta prontos para envio. Para envio 100% automático sem ninguém abrir, veja as instruções do Supabase Edge Functions no README.
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-secondary" onclick="fecharConfigAlertas()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarConfigAlertas()">Salvar Configuração</button>
+    </div>
+  </div>
+</div>
+
+<!-- SPINNER + TOAST -->
+<div id="spinner"><div class="spin"></div></div>
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════════
+// ESTADO GLOBAL
+// ═══════════════════════════════════════════════════════════════════════════════
+let currentUserNome = null;
+let chamados = [];
+let chamadoEditandoId = null;
+let chamadoDetalheAtual = null;
+let colaboradores = [];
+let colabEditandoIdx = null;
+const COLAB_STORAGE_KEY = 'ezproc_colaboradores_v1';
+let realtimeInterval = null; // intervalo de polling automático
+const CONFIG_ALERTAS_KEY = 'ezproc_config_alertas_v1';
+let configAlertas = { diasAlerta: 3, riscoDias: 7, ativo: true };
+let currentUserAdmin = false; // se o usuário logado é admin
+let currentUserEmail = null;  // email do usuário logado
+
+const RECORRENCIA_MAP = {
+  Diária:  ["1x por dia","2x por dia"],
+  Semanal: ["1x por semana","2x por semana","3x por semana"],
+  Mensal:  ["1x por mês","Quinzenal","2x por mês"],
+};
+
+const IMP_COLOR  = { Urgente:"#e44343", Alta:"#e47d2d", Média:"#c9a227", Baixa:"#27a85f" };
+const STA_COLOR  = { Aberto:"#2d6be4", "Em andamento":"#8b5cf6", Concluído:"#27a85f", Cancelado:"#4a5a78" };
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INICIALIZAÇÃO — Supabase Auth (email + senha)
+// ═══════════════════════════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  // Verificar sessão salva
+  const sessao = localStorage.getItem('ezproc_sessao');
+  if (sessao) {
+    try {
+      const s = JSON.parse(sessao);
+      if (s.nome && s.email && Date.now() < s.expira) {
+        currentUserNome  = s.nome;
+        currentUserEmail = s.email;
+        currentUserAdmin = s.admin || false;
+        entrarNoApp();
+        return;
+      }
+    } catch(e) {}
+    localStorage.removeItem('ezproc_sessao');
+  }
+});
+
+function mostrarCadastro() {
+  document.getElementById('card-login').style.display = 'none';
+  document.getElementById('card-cadastro').style.display = 'block';
+}
+
+function mostrarLogin() {
+  document.getElementById('card-cadastro').style.display = 'none';
+  document.getElementById('card-login').style.display = 'block';
+}
+
+async function cadastrar() {
+  const nome   = document.getElementById('cad-nome').value.trim();
+  const email  = document.getElementById('cad-email').value.trim().toLowerCase();
+  const senha  = document.getElementById('cad-senha').value;
+  const senha2 = document.getElementById('cad-senha2').value;
+
+  if (!nome)  { toast('Informe seu nome completo.', true); return; }
+  if (!email) { toast('Informe seu email.', true); return; }
+  if (senha.length < 6) { toast('A senha deve ter pelo menos 6 caracteres.', true); return; }
+  if (senha !== senha2) { toast('As senhas não coincidem.', true); return; }
+
+  spinner(true);
+  try {
+    // Verificar se email já cadastrado
+    const existing = await sbFetch(SB.url('usuarios', `?email=eq.${encodeURIComponent(email)}&select=id`));
+    if (existing && existing.length > 0) {
+      toast('Este email já está cadastrado. Faça login.', true);
+      spinner(false); return;
+    }
+    // Verificar se é o primeiro usuário ou admin_email do CONFIG
+    const todos = await sbFetch(SB.url('usuarios', '?select=id'));
+    const primeiroUsuario = !todos || todos.length === 0;
+    const isAdminEmail = email === CONFIG.ADMIN_EMAIL.toLowerCase();
+    const isAdmin = primeiroUsuario || isAdminEmail;
+
+    const senhaHash = await hashSenha(senha);
+    await sbFetch(SB.url('usuarios'), {
+      method: 'POST',
+      body: JSON.stringify({
+        nome, email, senha_hash: senhaHash,
+        is_admin: isAdmin,
+        status_colab: 'Ativo',
+        criado_em: new Date().toISOString()
+      })
+    });
+    const msg = isAdmin ? '✅ Conta criada com permissão de Administrador!' : '✅ Conta criada! Faça login agora.';
+    toast(msg);
+    document.getElementById('cad-nome').value  = '';
+    document.getElementById('cad-senha').value  = '';
+    document.getElementById('cad-senha2').value = '';
+    document.getElementById('login-email').value = email;
+    mostrarLogin();
+  } catch(e) {
+    console.error('Erro cadastro:', e);
+    if (e.message && e.message.includes('SETUP_NEEDED')) {
+      toast('⚠️ Execute o SQL de setup no Supabase primeiro.', true);
+    } else if (e.message && e.message.includes('column')) {
+      toast('⚠️ Execute o SQL de atualização da tabela no Supabase.', true);
+    } else {
+      toast('Erro ao cadastrar: ' + e.message, true);
+    }
+  }
+  spinner(false);
+}
+
+async function signIn() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const senha = document.getElementById('login-senha').value;
+  if (!email || !senha) { toast('Informe email e senha.', true); return; }
+
+  spinner(true);
+  try {
+    const rows = await sbFetch(SB.url('usuarios', `?email=eq.${encodeURIComponent(email)}&select=*`));
+    if (!rows || rows.length === 0) { toast('Email não encontrado. Cadastre-se primeiro.', true); spinner(false); return; }
+    const usuario = rows[0];
+    const senhaHash = await hashSenha(senha);
+    if (senhaHash !== usuario.senha_hash) { toast('Senha incorreta.', true); spinner(false); return; }
+
+    currentUserNome  = usuario.nome;
+    currentUserEmail = usuario.email;
+    currentUserAdmin = usuario.is_admin || false;
+    // Salvar sessão por 8 horas
+    localStorage.setItem('ezproc_sessao', JSON.stringify({
+      nome: usuario.nome, email: usuario.email,
+      admin: usuario.is_admin || false,
+      expira: Date.now() + 8 * 60 * 60 * 1000
+    }));
+    await entrarNoApp();
+  } catch(e) {
+    toast('Erro ao entrar: ' + e.message, true);
+  }
+  spinner(false);
+}
+
+function signOut() {
+  clearInterval(realtimeInterval);
+  realtimeInterval = null;
+  currentUserNome  = null;
+  currentUserEmail = null;
+  currentUserAdmin = false;
+  colaboradores    = [];
+  localStorage.removeItem('ezproc_sessao');
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-senha').value = '';
+  mostrarLogin();
+}
+
+// Hash SHA-256 via Web Crypto API (nativo no navegador)
+async function hashSenha(senha) {
+  const enc = new TextEncoder();
+  const buf = await crypto.subtle.digest('SHA-256', enc.encode(senha + 'ezproc_salt_2025'));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+function popularLoginSelect() { /* login agora é por email+senha */ }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SUPABASE REST API
+// ═══════════════════════════════════════════════════════════════════════════════
+
+async function sbFetch(path, opts = {}) {
+  const url = path.startsWith('http') ? path : SB.url(path);
+  const r = await fetch(url, { ...opts, headers: { ...SB.headers(), ...(opts.headers||{}) } });
+  if (!r.ok) {
+    const txt = await r.text().catch(() => String(r.status));
+    console.error('sbFetch error:', r.status, txt, url);
+    if (r.status === 404 || txt.includes('does not exist') || txt.includes('relation')) {
+      throw new Error('SETUP_NEEDED');
+    }
+    throw new Error(`Supabase ${r.status}: ${txt}`);
+  }
+  const ct = r.headers.get('content-type') || '';
+  return ct.includes('json') ? r.json() : r.text();
+}
+
+async function entrarNoApp() {
+  document.getElementById('user-name').textContent = currentUserNome + (currentUserAdmin ? ' 👑' : '');
+  document.getElementById('user-avatar').textContent = currentUserNome[0].toUpperCase();
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'flex';
+  // Aba Colaboradores só visível para admins
+  const tabColab = document.getElementById('tab-colaboradores');
+  if (tabColab) tabColab.style.display = currentUserAdmin ? '' : 'none';
+  await carregarUsuarios();
+  await carregarChamados();
+  await carregarNotificacoes();
+  carregarConfigAlertas();
+  iniciarAutoRefresh();
+}
+
+async function carregarUsuarios() {
+  try {
+    const rows = await sbFetch(SB.url('usuarios', '?order=criado_em.asc&select=id,nome,email,is_admin,status_colab,criado_em'));
+    colaboradores = rows.map(u => ({
+      dbId:        u.id,
+      nome:        u.nome,
+      email:       u.email,
+      statusColab: u.status_colab || 'Ativo',
+      isAdmin:     u.is_admin || false,
+      cadastradoEm: u.criado_em ? new Date(u.criado_em).toLocaleDateString('pt-BR') : '-'
+    }));
+    localStorage.setItem(COLAB_STORAGE_KEY, JSON.stringify(colaboradores));
+    popularSelectsColaboradores();
+    popularLoginSelect();
+  } catch(e) {
+    // fallback localStorage
+    try {
+      const saved = localStorage.getItem(COLAB_STORAGE_KEY);
+      if (saved) colaboradores = JSON.parse(saved);
+    } catch(e2) {}
+  }
+}
+
+function iniciarAutoRefresh() {
+  clearInterval(realtimeInterval);
+  // Atualiza silenciosamente a cada 30 segundos
+  realtimeInterval = setInterval(async () => {
+    try {
+      const rows = await sbFetch(SB.url('chamados', '?order=criado_em.desc&limit=500'));
+      const novos = rows.map(dbParaChamado);
+      // Só re-renderiza se houver mudança real
+      if (JSON.stringify(novos) !== JSON.stringify(chamados)) {
+        chamados = novos;
+        renderTudo();
+        // Indicador sutil de atualização
+        const btn = document.getElementById('btn-refresh-indicator');
+        if (btn) { btn.textContent = '↻ ' + new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}); }
+      }
+    } catch(e) { /* silencioso */ }
+    // Atualizar badge de notificações silenciosamente
+    carregarNotificacoes().catch(() => {});
+  }, 30000);
+}
+
+// ── Converter entre formato app e formato banco ───────────────────────────────
+function chamadoParaDb(c) {
+  return {
+    chamado_id:        c.id,
+    solicitante:       c.solicitante,
+    responsavel:       c.responsavel,
+    tarefa:            c.tarefa,
+    descricao:         c.descricao || '',
+    importancia:       c.importancia,
+    frequencia:        c.frequencia,
+    recorrencia:       c.recorrencia || '',
+    data_solicitacao:  c.dataSolicitacao,
+    data_prazo:        c.dataPrazo,
+    status:            c.status,
+    observacoes:       JSON.stringify(c.observacoes || []),
+    ultima_atualizacao: c.ultimaAtualizacao || '',
+    criado_em:         c.criadoEm || new Date().toLocaleString('pt-BR'),
+  };
+}
+
+function dbParaChamado(row) {
+  let obs = [];
+  try { obs = JSON.parse(row.observacoes || '[]'); } catch(e) {}
+  return {
+    id:               row.chamado_id,
+    dbId:             row.id,
+    solicitante:      row.solicitante,
+    responsavel:      row.responsavel,
+    tarefa:           row.tarefa,
+    descricao:        row.descricao,
+    importancia:      row.importancia,
+    frequencia:       row.frequencia,
+    recorrencia:      row.recorrencia,
+    dataSolicitacao:  row.data_solicitacao,
+    dataPrazo:        row.data_prazo,
+    status:           row.status,
+    observacoes:      obs,
+    ultimaAtualizacao: row.ultima_atualizacao,
+    criadoEm:         row.criado_em,
+  };
+}
+
+// ── CRUD ─────────────────────────────────────────────────────────────────────
+async function carregarChamados() {
+  spinner(true);
+  try {
+    const rows = await sbFetch(SB.url('chamados', '?order=criado_em.desc&limit=500'));
+    chamados = rows.map(dbParaChamado);
+    renderTudo();
+  } catch(e) {
+    if (e.message === 'SETUP_NEEDED') {
+      toast('⚠️ Tabela não encontrada. Execute o SQL de setup no Supabase.', true);
+    } else if (CONFIG.SUPABASE_URL.includes('SEU_PROJETO')) {
+      toast('⚙️ Configure SUPABASE_URL e SUPABASE_KEY no arquivo HTML.', true);
+      // Modo demo local
+      const local = localStorage.getItem('ezproc_chamados_local');
+      chamados = local ? JSON.parse(local) : [];
+      renderTudo();
+    } else {
+      toast('Erro ao carregar: ' + e.message, true);
+    }
+  }
+  spinner(false);
+}
+
+async function salvarChamadoDb(chamado, isNew) {
+  localStorage.setItem('ezproc_chamados_local', JSON.stringify(chamados));
+  if (CONFIG.SUPABASE_URL.includes('SEU_PROJETO')) return; // modo demo
+  const body = chamadoParaDb(chamado);
+  if (isNew) {
+    const [row] = await sbFetch(SB.url('chamados'), {
+      method: 'POST', body: JSON.stringify(body)
+    });
+    chamado.dbId = row.id;
+  } else {
+    await sbFetch(SB.url('chamados', `?chamado_id=eq.${chamado.id}`), {
+      method: 'PATCH', body: JSON.stringify(body)
+    });
+  }
+}
+
+async function deletarChamadoDb(chamado) {
+  localStorage.setItem('ezproc_chamados_local', JSON.stringify(chamados));
+  if (CONFIG.SUPABASE_URL.includes('SEU_PROJETO')) return;
+  await sbFetch(SB.url('chamados', `?chamado_id=eq.${chamado.id}`), { method: 'DELETE' });
+}
+
+// ── Email via mailto ──────────────────────────────────────────────────────────
+// Email via mailto (Opção B — sem Graph API)
+async function enviarEmail(chamado) {
+  const resp = colaboradores.find(c => c.nome === chamado.responsavel);
+  if (!resp) return;
+  const sub = encodeURIComponent(`[${chamado.id}] ${chamado.tarefa}`);
+  const corpo = encodeURIComponent(
+    `Olá, ${chamado.responsavel}!
+
+Você recebeu um novo chamado no sistema EZPROC:
+
+` +
+    `📋 ID: ${chamado.id}
+` +
+    `👤 Solicitante: ${chamado.solicitante}
+` +
+    `📌 Tarefa: ${chamado.tarefa}
+` +
+    `📝 Descrição: ${chamado.descricao || '-'}
+` +
+    `🚨 Importância: ${chamado.importancia}
+` +
+    `🔁 Frequência: ${chamado.frequencia}${chamado.recorrencia ? ' (' + chamado.recorrencia + ')' : ''}
+` +
+    `📅 Solicitado em: ${chamado.dataSolicitacao}
+` +
+    `⏰ Prazo: ${chamado.dataPrazo}
+
+` +
+    `Acesse o sistema para acompanhar e atualizar o andamento.
+
+EZPROC Operações · Atlasino`
+  );
+  window.location.href = `mailto:${resp.email}?subject=${sub}&body=${corpo}`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CRIAR / EDITAR CHAMADO
+// ═══════════════════════════════════════════════════════════════════════════════
+function abrirModalChamado(chamado) {
+  chamadoEditandoId = chamado ? chamado.id : null;
+  document.getElementById('modal-chamado-title').textContent = chamado ? '✏️ Editar Chamado' : '📋 Abrir Chamado';
+  document.getElementById('btn-salvar-chamado').textContent = chamado ? 'Salvar Alterações' : 'Abrir Chamado';
+  const hoje = new Date().toISOString().split('T')[0];
+  setVal('f-solicitante', chamado ? chamado.solicitante : (colaboradores.find(c=>c.nome===currentUserNome) ? currentUserNome : ''));
+  setVal('f-responsavel', chamado ? chamado.responsavel : '');
+  setVal('f-tarefa', chamado ? chamado.tarefa : '');
+  setVal('f-descricao', chamado ? chamado.descricao : '');
+  setVal('f-importancia', chamado ? chamado.importancia : 'Média');
+  setVal('f-frequencia', chamado ? chamado.frequencia : 'Única');
+  setVal('f-data-solic', chamado ? chamado.dataSolicitacao : hoje);
+  // prazo indeterminado
+  const indet = chamado && chamado.dataPrazo === 'Indeterminado';
+  document.getElementById('f-prazo-indet').checked = indet;
+  document.getElementById('f-data-prazo').value = indet ? '' : (chamado ? chamado.dataPrazo : '');
+  document.getElementById('f-data-prazo').disabled = indet;
+  toggleRecorrencia();
+  if (chamado && chamado.recorrencia) setVal('f-recorrencia', chamado.recorrencia);
+  // filtrar responsáveis: só Ativos no select
+  popularSelectsResponsavel();
+  document.getElementById('modal-chamado').style.display = 'flex';
+}
+
+function togglePrazoIndet() {
+  const indet = document.getElementById('f-prazo-indet').checked;
+  const campo = document.getElementById('f-data-prazo');
+  campo.disabled = indet;
+  if (indet) campo.value = '';
+}
+
+function popularSelectsResponsavel() {
+  const el = document.getElementById('f-responsavel');
+  if (!el) return;
+  const currentVal = el.value;
+  while (el.options.length > 1) el.remove(1);
+  colaboradores.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c.nome;
+    const st = c.statusColab || 'Ativo';
+    const icon = st === 'Ativo' ? '' : st === 'Ferias' ? ' 🌴' : ' 🔴';
+    o.textContent = c.nome + icon;
+    el.appendChild(o);
+  });
+  el.value = currentVal;
+}
+
+function toggleRecorrencia() {
+  const freq = getVal('f-frequencia');
+  const wrap = document.getElementById('recorrencia-wrap');
+  const sel = document.getElementById('f-recorrencia');
+  if (freq !== 'Única' && RECORRENCIA_MAP[freq]) {
+    wrap.style.display = 'flex';
+    sel.innerHTML = '<option value="">Selecione...</option>' + RECORRENCIA_MAP[freq].map(r => `<option>${r}</option>`).join('');
+  } else { wrap.style.display = 'none'; }
+}
+
+async function salvarChamado() {
+  const solicitante = getVal('f-solicitante');
+  const responsavel = getVal('f-responsavel');
+  const tarefa = getVal('f-tarefa').trim();
+  const prazoIndet = document.getElementById('f-prazo-indet').checked;
+  const dataPrazo = prazoIndet ? 'Indeterminado' : getVal('f-data-prazo');
+  if (!solicitante || !responsavel || !tarefa) {
+    toast('Preencha todos os campos obrigatórios (*)', true); return;
+  }
+  if (!prazoIndet && !dataPrazo) {
+    toast('Informe a data do prazo ou marque como Indeterminado.', true); return;
+  }
+  // Verificar se responsável está ativo
+  const colabResp = colaboradores.find(c => c.nome === responsavel);
+  if (colabResp && colabResp.statusColab !== 'Ativo' && colabResp.statusColab !== undefined) {
+    const sl = colabResp.statusColab === 'Ferias' ? 'de férias' : 'inativo';
+    if (!confirm(`${responsavel} está ${sl}. Deseja abrir o chamado mesmo assim?`)) return;
+  }
+  spinner(true);
+  const agora = new Date().toLocaleString('pt-BR');
+  // status sempre começa como Aberto (responsável quem atualiza)
+  const existingChamado = chamadoEditandoId ? chamados.find(c=>c.id===chamadoEditandoId) : null;
+  const chamado = {
+    id: chamadoEditandoId || ('CH-' + Date.now().toString(36).toUpperCase()),
+    solicitante, responsavel, tarefa,
+    descricao: getVal('f-descricao'),
+    importancia: getVal('f-importancia'),
+    frequencia: getVal('f-frequencia'),
+    recorrencia: getVal('f-recorrencia') || '',
+    dataSolicitacao: getVal('f-data-solic'),
+    dataPrazo,
+    status: existingChamado ? existingChamado.status : 'Aberto',
+    observacoes: [],
+    ultimaAtualizacao: agora,
+    criadoEm: agora,
+  };
+
+  if (chamadoEditandoId) {
+    const existing = chamados.find(c => c.id === chamadoEditandoId);
+    chamado.observacoes = existing ? (existing.observacoes || []) : [];
+    chamado.criadoEm    = existing ? existing.criadoEm : agora;
+    chamado.dbId        = existing ? existing.dbId : null;
+    chamados = chamados.map(c => c.id === chamadoEditandoId ? chamado : c);
+    await salvarChamadoDb(chamado, false);
+  } else {
+    chamados.unshift(chamado);
+    await salvarChamadoDb(chamado, true);
+    await enviarEmail(chamado);
+  }
+  fecharModal('modal-chamado');
+  renderTudo();
+  spinner(false);
+  toast(chamadoEditandoId ? 'Chamado atualizado!' : '✅ Chamado aberto e email enviado!');
+  chamadoEditandoId = null;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DETALHE + OBSERVAÇÕES
+// ═══════════════════════════════════════════════════════════════════════════════
+function abrirDetalhe(chamado) {
+  chamadoDetalheAtual = chamado;
+  // Mostrar/ocultar botão excluir conforme permissão
+  const btnExcluir = document.getElementById('btn-excluir-chamado');
+  if (btnExcluir) btnExcluir.style.display = currentUserAdmin ? '' : 'none';
+  document.getElementById('d-id').textContent = chamado.id;
+  document.getElementById('d-tarefa').textContent = chamado.tarefa;
+  document.getElementById('d-desc').textContent = chamado.descricao || 'Sem descrição informada.';
+
+  // Badges
+  const bd = document.getElementById('d-badges');
+  bd.innerHTML = [
+    badge(chamado.importancia, IMP_COLOR[chamado.importancia]),
+    badge(chamado.status, STA_COLOR[chamado.status]),
+    badge(chamado.frequencia, '#4a5a78'),
+    chamado.recorrencia ? badge(chamado.recorrencia, '#3a4a68') : '',
+  ].join('');
+
+  // Meta
+  const meta = document.getElementById('d-meta');
+  meta.innerHTML = [
+    ['👤 Solicitante', chamado.solicitante],
+    ['🎯 Responsável', chamado.responsavel],
+    ['📅 Solicitação', chamado.dataSolicitacao],
+    ['⏰ Prazo', chamado.dataPrazo],
+    ['🕐 Criado em', chamado.criadoEm || '-'],
+    ['🔄 Última atualiz.', chamado.ultimaAtualizacao || '-'],
+  ].map(([k,v]) => `<div class="detail-meta-item"><div class="detail-meta-label">${k}</div><div class="detail-meta-value">${v || '-'}</div></div>`).join('');
+
+  // Barra de prazo
+  const pw = document.getElementById('d-prazo-bar-wrap');
+  if (chamado.dataPrazo === 'Indeterminado') {
+    pw.innerHTML = `<div style="background:rgba(100,116,139,0.1);border:1px solid var(--border2);border-radius:var(--radius);padding:12px 16px;font-size:13px;color:var(--muted2);">📅 Prazo <strong>indeterminado</strong> — sem data limite definida</div>`;
+  } else if (chamado.dataSolicitacao && chamado.dataPrazo) {
+    const start = new Date(chamado.dataSolicitacao + 'T00:00:00');
+    const end   = new Date(chamado.dataPrazo + 'T00:00:00');
+    const now   = new Date(); now.setHours(0,0,0,0);
+    const total = Math.max(1, end - start);
+    const passed = now - start;
+    const pct = Math.min(100, Math.max(0, Math.round((passed / total) * 100)));
+    const dias = Math.ceil((end - now) / 86400000);
+    const cor = dias < 0 ? '#e44343' : dias <= 3 ? '#e47d2d' : '#2d6be4';
+    pw.innerHTML = `
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted2);margin-bottom:6px;">
+        <span>Progresso do prazo</span>
+        <span style="color:${cor};font-weight:700;">${dias < 0 ? Math.abs(dias)+'d em atraso ⚠️' : dias+'d restantes'}</span>
+      </div>
+      <div class="prazo-bar-bg"><div class="prazo-bar-fill" style="width:${pct}%;background:${cor};"></div></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;">${pct}% do prazo decorrido</div>`;
+  } else { pw.innerHTML = ''; }
+
+  // Observações
+  renderObs(chamado);
+  document.getElementById('nova-obs').value = '';
+  document.getElementById('obs-status').value = '';
+  document.getElementById('modal-detalhe').style.display = 'flex';
+}
+
+function renderObs(chamado) {
+  const list = document.getElementById('obs-list');
+  const obs = chamado.observacoes || [];
+  if (obs.length === 0) {
+    list.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:12px 0;">Nenhuma observação ainda.</div>';
+  } else {
+    list.innerHTML = obs.slice().reverse().map(o => `
+      <div class="obs-item">
+        <div class="obs-item-header">
+          <span class="obs-item-author">✍ ${o.autor}</span>
+          <span class="obs-item-date">${o.data}</span>
+        </div>
+        ${o.statusChange ? `<div style="margin-bottom:6px;">${badge(o.statusChange, STA_COLOR[o.statusChange])}</div>` : ''}
+        <div class="obs-item-text">${o.texto}</div>
+      </div>`).join('');
+  }
+}
+
+async function adicionarObs() {
+  const texto = document.getElementById('nova-obs').value.trim();
+  if (!texto) { toast('Digite uma observação antes de salvar.', true); return; }
+  const novoStatus = document.getElementById('obs-status').value;
+  const agora = new Date().toLocaleString('pt-BR');
+  const novaObs = {
+    autor: currentUserNome || 'Usuário',
+    data: agora,
+    texto,
+    statusChange: novoStatus || null,
+  };
+  const chamado = chamados.find(c => c.id === chamadoDetalheAtual.id);
+  if (!chamado) return;
+  chamado.observacoes = chamado.observacoes || [];
+  chamado.observacoes.push(novaObs);
+  chamado.ultimaAtualizacao = agora;
+  if (novoStatus) chamado.status = novoStatus;
+
+  spinner(true);
+  await salvarChamadoDb(chamado, false);
+
+  // ── Notificar solicitante ──────────────────────────────────────────────────
+  // Só notifica se o responsável for diferente do solicitante
+  if (chamado.solicitante !== currentUserNome) {
+    // 1. Salvar notificação no banco para aparecer na tela do solicitante
+    await salvarNotificacao({
+      destinatario: chamado.solicitante,
+      chamado_id:   chamado.id,
+      tarefa:       chamado.tarefa,
+      autor:        currentUserNome,
+      observacao:   texto,
+      novo_status:  novoStatus || chamado.status,
+      lida:         false,
+      criado_em:    new Date().toISOString()
+    });
+
+    // 2. Enviar email ao solicitante
+    await enviarEmailAtualizacao(chamado, novaObs);
+  }
+
+  chamadoDetalheAtual = chamado;
+  renderObs(chamado);
+  renderTudo();
+  document.getElementById('nova-obs').value = '';
+  document.getElementById('obs-status').value = '';
+  spinner(false);
+  toast('✅ Atualização salva' + (chamado.solicitante !== currentUserNome ? ' e solicitante notificado!' : '!'));
+}
+
+// ── Email de atualização ao solicitante ───────────────────────────────────────
+async function enviarEmailAtualizacao(chamado, obs) {
+  const solicitante = colaboradores.find(c => c.nome === chamado.solicitante);
+  if (!solicitante || !solicitante.email) return;
+  const statusLabel = obs.statusChange || chamado.status;
+  const sub = encodeURIComponent(`[Atualização] ${chamado.id} · ${chamado.tarefa}`);
+  const corpo = encodeURIComponent(
+    `Olá, ${chamado.solicitante}!
+
+` +
+    `O chamado que você abriu recebeu uma atualização:
+
+` +
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+` +
+    `📋 ID: ${chamado.id}
+` +
+    `📌 Tarefa: ${chamado.tarefa}
+` +
+    `👤 Responsável: ${chamado.responsavel}
+` +
+    `📊 Status atual: ${statusLabel}
+` +
+    `⏰ Prazo: ${chamado.dataPrazo}
+` +
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+` +
+    `💬 Observação de ${obs.autor} em ${obs.data}:
+` +
+    `"${obs.texto}"
+
+` +
+    `Acesse o sistema para acompanhar o andamento.
+
+` +
+    `EZPROC Operações · Atlasino`
+  );
+  window.open(`mailto:${solicitante.email}?subject=${sub}&body=${corpo}`, '_blank');
+}
+
+// ── Notificações ──────────────────────────────────────────────────────────────
+const NOTIF_KEY = 'ezproc_notificacoes_v1';
+
+async function salvarNotificacao(notif) {
+  try {
+    await sbFetch(SB.url('notificacoes'), {
+      method: 'POST',
+      body: JSON.stringify(notif)
+    });
+  } catch(e) {
+    // fallback local se tabela não existir ainda
+    const local = JSON.parse(localStorage.getItem(NOTIF_KEY) || '[]');
+    local.unshift({ ...notif, id: Date.now() });
+    localStorage.setItem(NOTIF_KEY, JSON.stringify(local.slice(0, 50)));
+  }
+}
+
+async function carregarNotificacoes() {
+  let notifs = [];
+  try {
+    notifs = await sbFetch(SB.url('notificacoes',
+      `?destinatario=eq.${encodeURIComponent(currentUserNome)}&order=criado_em.desc&limit=30`));
+  } catch(e) {
+    notifs = JSON.parse(localStorage.getItem(NOTIF_KEY) || '[]')
+      .filter(n => n.destinatario === currentUserNome);
+  }
+  renderNotificacoes(notifs);
+}
+
+function renderNotificacoes(notifs) {
+  const lista = document.getElementById('notif-lista');
+  const badge = document.getElementById('notif-badge');
+  if (!lista || !badge) return;
+  const naoLidas = notifs.filter(n => !n.lida).length;
+  badge.textContent = naoLidas;
+  badge.style.display = naoLidas > 0 ? 'flex' : 'none';
+  if (notifs.length === 0) {
+    lista.innerHTML = '<div class="notif-empty">🔔 Nenhuma notificação</div>';
+    return;
+  }
+  lista.innerHTML = notifs.map(n => `
+    <div class="notif-item ${!n.lida ? 'unread' : ''}" onclick="abrirChamadoDaNotif('${n.chamado_id}', ${n.id || 0})">
+      <div class="notif-item-title">📋 ${n.tarefa}</div>
+      <div class="notif-item-sub">
+        <strong>${n.autor}</strong> atualizou · Status: <strong>${n.novo_status || '-'}</strong><br/>
+        <em>"${(n.observacao || '').slice(0, 80)}${n.observacao && n.observacao.length > 80 ? '...' : ''}"</em>
+      </div>
+      <div class="notif-item-time">${n.criado_em ? new Date(n.criado_em).toLocaleString('pt-BR') : ''}</div>
+    </div>`).join('');
+}
+
+function toggleNotifPanel() {
+  const panel = document.getElementById('notif-panel');
+  if (!panel) return;
+  const visible = panel.style.display !== 'none';
+  panel.style.display = visible ? 'none' : 'block';
+  if (!visible) carregarNotificacoes();
+}
+
+// Fechar painel ao clicar fora
+document.addEventListener('click', e => {
+  const panel = document.getElementById('notif-panel');
+  const btn   = document.getElementById('btn-notif');
+  if (panel && btn && !panel.contains(e.target) && !btn.contains(e.target)) {
+    panel.style.display = 'none';
+  }
+});
+
+async function marcarTodasLidas() {
+  try {
+    await sbFetch(SB.url('notificacoes',
+      `?destinatario=eq.${encodeURIComponent(currentUserNome)}&lida=eq.false`), {
+      method: 'PATCH', body: JSON.stringify({ lida: true })
+    });
+  } catch(e) {
+    const local = JSON.parse(localStorage.getItem(NOTIF_KEY) || '[]')
+      .map(n => n.destinatario === currentUserNome ? { ...n, lida: true } : n);
+    localStorage.setItem(NOTIF_KEY, JSON.stringify(local));
+  }
+  carregarNotificacoes();
+  toast('Todas as notificações marcadas como lidas.');
+}
+
+function abrirChamadoDaNotif(chamadoId, notifId) {
+  document.getElementById('notif-panel').style.display = 'none';
+  setTab('chamados');
+  setTimeout(() => {
+    const c = chamados.find(x => x.id === chamadoId);
+    if (c) abrirDetalhe(c);
+  }, 300);
+  // marcar como lida
+  if (notifId) {
+    sbFetch(SB.url('notificacoes', `?id=eq.${notifId}`), {
+      method: 'PATCH', body: JSON.stringify({ lida: true })
+    }).then(() => carregarNotificacoes()).catch(() => {});
+  }
+}
+
+function editarChamadoAtual() {
+  fecharModal('modal-detalhe');
+  abrirModalChamado(chamadoDetalheAtual);
+}
+
+async function deletarChamadoAtual() {
+  if (!currentUserAdmin) { toast('Apenas administradores podem excluir chamados.', true); return; }
+  if (!confirm('Excluir este chamado? Esta ação não pode ser desfeita.')) return;
+  spinner(true);
+  const c = chamadoDetalheAtual;
+  await deletarChamadoDb(c);
+  chamados = chamados.filter(x => x.id !== c.id);
+  fecharModal('modal-detalhe');
+  renderTudo();
+  spinner(false);
+  toast('Chamado excluído.');
+}
+
+async function enviarEmailChamado() { await enviarEmail(chamadoDetalheAtual); }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ALERTAS DE PRAZO & VISÃO DE RISCO
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function carregarConfigAlertas() {
+  try {
+    const saved = localStorage.getItem(CONFIG_ALERTAS_KEY);
+    if (saved) configAlertas = { ...configAlertas, ...JSON.parse(saved) };
+    document.getElementById('config-dias-alerta').value = configAlertas.diasAlerta;
+    document.getElementById('config-risco-dias').value  = configAlertas.riscoDias;
+    document.getElementById('config-alertas-ativo').value = String(configAlertas.ativo);
+  } catch(e) {}
+  if (configAlertas.ativo) verificarAlertasPrazo();
+}
+
+function salvarConfigAlertas() {
+  configAlertas.diasAlerta = parseInt(getVal('config-dias-alerta'));
+  configAlertas.riscoDias  = parseInt(getVal('config-risco-dias'));
+  configAlertas.ativo      = getVal('config-alertas-ativo') === 'true';
+  localStorage.setItem(CONFIG_ALERTAS_KEY, JSON.stringify(configAlertas));
+  fecharConfigAlertas();
+  renderCardRisco();
+  if (configAlertas.ativo) verificarAlertasPrazo();
+  toast('✅ Configuração de alertas salva!');
+}
+
+function abrirConfigAlertas() {
+  document.getElementById('config-dias-alerta').value    = configAlertas.diasAlerta;
+  document.getElementById('config-risco-dias').value     = configAlertas.riscoDias;
+  document.getElementById('config-alertas-ativo').value  = String(configAlertas.ativo);
+  document.getElementById('config-alertas-panel').style.display = 'flex';
+}
+
+function fecharConfigAlertas() {
+  document.getElementById('config-alertas-panel').style.display = 'none';
+}
+
+function verificarAlertasPrazo() {
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const limite = configAlertas.diasAlerta;
+  // Filtrar chamados do responsável atual que estão prestes a vencer
+  const emRisco = chamados.filter(c => {
+    if (c.dataPrazo === 'Indeterminado' || !c.dataPrazo) return false;
+    if (c.status === 'Concluído' || c.status === 'Cancelado') return false;
+    if (c.responsavel !== currentUserNome) return false;
+    const prazo = new Date(c.dataPrazo + 'T00:00:00');
+    const diff = Math.ceil((prazo - hoje) / 86400000);
+    return diff >= 0 && diff <= limite;
+  });
+  if (emRisco.length === 0) return;
+
+  // Verificar quais já foram alertados hoje
+  const alertadosHoje = JSON.parse(localStorage.getItem('ezproc_alertados_' + hoje.toDateString()) || '[]');
+  const novos = emRisco.filter(c => !alertadosHoje.includes(c.id));
+  if (novos.length === 0) return;
+
+  // Marcar como alertados
+  const ids = [...alertadosHoje, ...novos.map(c => c.id)];
+  localStorage.setItem('ezproc_alertados_' + hoje.toDateString(), JSON.stringify(ids));
+
+  // Abrir emails um por um (com delay para não bloquear)
+  novos.forEach((c, i) => {
+    setTimeout(() => enviarEmailAlertaPrazo(c), i * 1500);
+  });
+
+  toast(`⏰ ${novos.length} tarefa${novos.length > 1 ? 's' : ''} com prazo próximo — emails abertos!`);
+}
+
+async function enviarEmailAlertaPrazo(chamado) {
+  const resp = colaboradores.find(c => c.nome === chamado.responsavel);
+  if (!resp || !resp.email) return;
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const prazo = new Date(chamado.dataPrazo + 'T00:00:00');
+  const dias  = Math.ceil((prazo - hoje) / 86400000);
+  const urgencia = dias === 0 ? '🚨 VENCE HOJE' : `⏰ Vence em ${dias} dia${dias > 1 ? 's' : ''}`;
+  const sub = encodeURIComponent(`[${urgencia}] ${chamado.id} · ${chamado.tarefa}`);
+  const corpo = encodeURIComponent(
+    `Olá, ${chamado.responsavel}!
+
+` +
+    `${urgencia.replace(/[🚨⏰]/g, '').trim().toUpperCase()}
+
+` +
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+` +
+    `📋 ID: ${chamado.id}
+` +
+    `📌 Tarefa: ${chamado.tarefa}
+` +
+    `👤 Solicitante: ${chamado.solicitante}
+` +
+    `🚨 Importância: ${chamado.importancia}
+` +
+    `📊 Status atual: ${chamado.status}
+` +
+    `⏰ Prazo: ${chamado.dataPrazo}
+` +
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+` +
+    `${chamado.descricao ? 'Descrição: ' + chamado.descricao + '
+
+' : ''}` +
+    `Acesse o sistema EZPROC para atualizar o andamento.
+
+EZPROC Operações · Atlasino`
+  );
+  window.open(`mailto:${resp.email}?subject=${sub}&body=${corpo}`, '_blank');
+}
+
+function renderCardRisco() {
+  const card = document.getElementById('risco-card');
+  if (!card) return;
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const limite = configAlertas.riscoDias;
+  const fColab = getVal('dash-filtro-colab');
+
+  const emRisco = chamados.filter(c => {
+    if (c.dataPrazo === 'Indeterminado' || !c.dataPrazo) return false;
+    if (c.status === 'Concluído' || c.status === 'Cancelado') return false;
+    if (fColab && c.responsavel !== fColab) return false;
+    const prazo = new Date(c.dataPrazo + 'T00:00:00');
+    const diff  = Math.ceil((prazo - hoje) / 86400000);
+    return diff <= limite;
+  }).sort((a, b) => {
+    const da = new Date(a.dataPrazo + 'T00:00:00');
+    const db = new Date(b.dataPrazo + 'T00:00:00');
+    return da - db;
+  });
+
+  if (emRisco.length === 0) {
+    card.classList.remove('show');
+    return;
+  }
+
+  const atrasados = emRisco.filter(c => {
+    const p = new Date(c.dataPrazo + 'T00:00:00');
+    return p < hoje;
+  });
+  const vencendo = emRisco.filter(c => {
+    const p = new Date(c.dataPrazo + 'T00:00:00');
+    return p >= hoje;
+  });
+
+  const corFundo  = atrasados.length > 0 ? '#fff5f5' : '#fffbeb';
+  const corBorda  = atrasados.length > 0 ? '#fecaca' : '#fde68a';
+  const corTitulo = atrasados.length > 0 ? '#dc2626' : '#d97706';
+  const icone     = atrasados.length > 0 ? '🚨' : '⚠️';
+  const titulo    = atrasados.length > 0
+    ? `${atrasados.length} tarefa${atrasados.length>1?'s':''} atrasada${atrasados.length>1?'s':''} · ${vencendo.length} vencendo em breve`
+    : `${vencendo.length} tarefa${vencendo.length>1?'s':''} vencendo nos próximos ${limite} dias`;
+
+  const itens = emRisco.slice(0, 6).map(c => {
+    const prazo = new Date(c.dataPrazo + 'T00:00:00');
+    const diff  = Math.ceil((prazo - hoje) / 86400000);
+    const atrasado = diff < 0;
+    const cor   = atrasado ? '#dc2626' : diff <= 2 ? '#ea580c' : '#d97706';
+    const label = atrasado ? `${Math.abs(diff)}d em atraso` : diff === 0 ? 'Vence hoje!' : `${diff}d restantes`;
+    return `
+      <div class="risco-item" style="background:${atrasado ? '#fff0f0' : '#fffdf0'};border:1px solid ${atrasado ? '#fecaca' : '#fde68a'};"
+           onclick="abrirDetalheById('${c.id}')">
+        <div class="risco-item-info">
+          <div class="risco-item-tarefa" style="color:#0f1523;">${c.tarefa}</div>
+          <div class="risco-item-meta" style="color:#6b7fa0;">
+            👤 ${c.responsavel} · ${c.importancia} · ${c.status}
+          </div>
+        </div>
+        <div class="risco-item-prazo" style="color:${cor};">${label}</div>
+      </div>`;
+  }).join('');
+
+  const mais = emRisco.length > 6
+    ? `<div style="text-align:center;padding:10px;font-size:12px;color:var(--muted);">
+        + ${emRisco.length - 6} tarefas — <span style="color:var(--accent);cursor:pointer;" onclick="setTab('chamados')">ver todas</span>
+       </div>` : '';
+
+  card.innerHTML = `
+    <div class="risco-card-header">
+      <div class="risco-card-title" style="color:${corTitulo};">${icone} Em Risco · ${titulo}</div>
+      <button onclick="document.getElementById('risco-card').classList.remove('show')"
+        style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;">✕</button>
+    </div>
+    ${itens}
+    ${mais}`;
+
+  card.style.background = corFundo;
+  card.style.border = `1px solid ${corBorda}`;
+  card.style.boxShadow = 'var(--shadow-sm)';
+  card.classList.add('show');
+}
+
+function abrirDetalheById(id) {
+  const c = chamados.find(x => x.id === id);
+  if (c) abrirDetalhe(c);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════════════════════
+function renderTudo() {
+  renderStats();
+  renderColab();
+  renderCharts();
+  renderTabela();
+  renderMinhas();
+  renderColaboradoresTabela();
+}
+
+function getDashFiltrado() {
+  const fColab  = getVal('dash-filtro-colab');
+  const fStatus = getVal('dash-filtro-status');
+  return chamados.filter(c => {
+    if (fColab  && c.responsavel !== fColab)  return false;
+    if (fStatus && c.status      !== fStatus) return false;
+    return true;
+  });
+}
+
+function renderStats() {
+  const base = getDashFiltrado();
+  const hoje2 = new Date(); hoje2.setHours(0,0,0,0);
+  const atrasados = base.filter(c => c.dataPrazo && new Date(c.dataPrazo+'T00:00:00') < hoje2 && c.status !== 'Concluído' && c.status !== 'Cancelado').length;
+  const fColab = getVal('dash-filtro-colab');
+  const stats = [
+    { l:'Total', v:base.length, c:'var(--text)' },
+    { l:'Abertos', v:base.filter(c=>c.status==='Aberto').length, c:'var(--accent)' },
+    { l:'Em Andamento', v:base.filter(c=>c.status==='Em andamento').length, c:'var(--purple)' },
+    { l:'Concluídos', v:base.filter(c=>c.status==='Concluído').length, c:'var(--green)' },
+    { l:'Urgentes', v:base.filter(c=>c.importancia==='Urgente').length, c:'var(--red)' },
+    { l:'Atrasados', v:atrasados, c:atrasados > 0 ? 'var(--red)' : 'var(--green)' },
+  ];
+  document.getElementById('stats-grid').innerHTML = stats.map(s =>
+    `<div class="stat-card"><div class="stat-label">${s.l}${fColab?' · '+fColab:''}</div><div class="stat-value" style="color:${s.c}">${s.v}</div></div>`
+  ).join('');
+}
+
+function renderColab() {
+  const fStatus = getVal('dash-filtro-status');
+  document.getElementById('colab-grid').innerHTML = colaboradores.map(col => {
+    const base = fStatus ? chamados.filter(c => c.responsavel === col.nome && c.status === fStatus) : chamados.filter(c => c.responsavel === col.nome);
+    const t  = base.length;
+    const ab = chamados.filter(c => c.responsavel === col.nome && c.status === 'Aberto').length;
+    return `<div class="colab-card">
+      <div class="colab-avatar">${col.nome[0]}</div>
+      <div class="colab-name">${col.nome}</div>
+      <div class="colab-num">${t}</div>
+      <div class="colab-sub">${ab} aberto${ab!==1?'s':''}</div>
+      ${t > 0 ? `<div style="margin-top:10px;background:var(--border);border-radius:4px;height:4px;overflow:hidden;"><div style="width:${Math.round((ab/t)*100)}%;background:var(--accent);height:4px;border-radius:4px;"></div></div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function renderCharts() {
+  const base  = getDashFiltrado();
+  const total = base.length || 1;
+  const impItems = ['Urgente','Alta','Média','Baixa'].map(i => {
+    const n = base.filter(c=>c.importancia===i).length;
+    return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+      ${badge(i, IMP_COLOR[i])}
+      <div style="flex:1;background:var(--border);border-radius:4px;height:6px;overflow:hidden;"><div style="width:${Math.round((n/total)*100)}%;background:${IMP_COLOR[i]};height:6px;border-radius:4px;"></div></div>
+      <span style="font-size:13px;font-weight:700;min-width:16px;text-align:right;">${n}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('chart-imp').innerHTML = impItems;
+
+  const staItems = ['Aberto','Em andamento','Concluído','Cancelado'].map(s => {
+    const n = base.filter(c=>c.status===s).length;
+    return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+      ${badge(s, STA_COLOR[s])}
+      <div style="flex:1;background:var(--border);border-radius:4px;height:6px;overflow:hidden;"><div style="width:${Math.round((n/total)*100)}%;background:${STA_COLOR[s]};height:6px;border-radius:4px;"></div></div>
+      <span style="font-size:13px;font-weight:700;min-width:16px;text-align:right;">${n}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('chart-status').innerHTML = staItems;
+}
+
+function renderTabela() {
+  const busca = (getVal('f-busca')||'').toLowerCase();
+  const fStatus = getVal('f-status');
+  const fResp = getVal('f-resp');
+  const fImp = getVal('f-imp');
+  const hoje2 = new Date(); hoje2.setHours(0,0,0,0);
+
+  const filtrados = chamados.filter(c => {
+    if (fStatus && c.status !== fStatus) return false;
+    if (fResp && c.responsavel !== fResp) return false;
+    if (fImp && c.importancia !== fImp) return false;
+    if (busca && !c.id.toLowerCase().includes(busca) && !c.tarefa.toLowerCase().includes(busca) && !c.solicitante.toLowerCase().includes(busca)) return false;
+    return true;
+  });
+
+  document.getElementById('filter-count').textContent = `${filtrados.length} chamado${filtrados.length!==1?'s':''}`;
+  document.getElementById('tabela-body').innerHTML = filtrados.length === 0
+    ? `<tr><td colspan="10"><div class="empty"><div class="empty-icon">📭</div><div class="empty-text">Nenhum chamado encontrado</div></div></td></tr>`
+    : filtrados.map((c,i) => {
+        const atrasado = c.dataPrazo && new Date(c.dataPrazo+'T00:00:00') < hoje2 && c.status !== 'Concluído' && c.status !== 'Cancelado';
+        return `<tr onclick="abrirDetalhe(chamados.find(x=>x.id==='${c.id}'))">
+          <td style="font-size:11px;font-weight:700;color:var(--accent);">${c.id}</td>
+          <td style="font-weight:600;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.tarefa}</td>
+          <td style="color:var(--muted2);">${c.solicitante}</td>
+          <td style="font-weight:600;">${c.responsavel}</td>
+          <td>${badge(c.importancia, IMP_COLOR[c.importancia])}</td>
+          <td style="color:var(--muted);font-size:12px;">${c.frequencia}${c.recorrencia?' · '+c.recorrencia:''}</td>
+          <td style="font-size:12px;font-weight:${atrasado?700:400};color:${atrasado?'var(--red)':'var(--muted2)'};">${c.dataPrazo||'—'}${atrasado?' ⚠️':''}</td>
+          <td style="font-size:11px;color:var(--muted);">${c.ultimaAtualizacao||'-'}</td>
+          <td>${badge(c.status, STA_COLOR[c.status])}</td>
+          <td><button class="btn btn-secondary btn-sm btn-icon" onclick="event.stopPropagation();enviarEmail(chamados.find(x=>x.id==='${c.id}'))" title="Enviar email">📧</button></td>
+        </tr>`;
+      }).join('');
+}
+
+function renderMinhas() {
+  const hoje2 = new Date(); hoje2.setHours(0,0,0,0);
+  const minhas = chamados.filter(c => c.responsavel === currentUserNome);
+  const abertas = minhas.filter(c => c.status !== 'Concluído' && c.status !== 'Cancelado').length;
+
+  document.getElementById('my-tasks-header').innerHTML = `
+    <div class="my-tasks-icon">🎯</div>
+    <div><div class="my-tasks-count">${minhas.length}</div><div class="my-tasks-label">chamados designados para você · ${abertas} em aberto</div></div>`;
+
+  document.getElementById('minhas-body').innerHTML = minhas.length === 0
+    ? `<tr><td colspan="8"><div class="empty"><div class="empty-icon">🎉</div><div class="empty-text">Sem tarefas no momento</div><div class="empty-sub">Nenhum chamado designado para você</div></div></td></tr>`
+    : minhas.map(c => {
+        const atrasado = c.dataPrazo && new Date(c.dataPrazo+'T00:00:00') < hoje2 && c.status !== 'Concluído' && c.status !== 'Cancelado';
+        let progresso = '';
+        if (c.dataSolicitacao && c.dataPrazo) {
+          const start = new Date(c.dataSolicitacao+'T00:00:00');
+          const end   = new Date(c.dataPrazo+'T00:00:00');
+          const total = Math.max(1, end - start);
+          const passed = new Date() - start;
+          const pct = Math.min(100, Math.max(0, Math.round((passed/total)*100)));
+          const dias = Math.ceil((end - hoje2) / 86400000);
+          const cor = dias < 0 ? '#e44343' : dias <= 3 ? '#e47d2d' : '#2d6be4';
+          progresso = `<div style="font-size:12px;margin-bottom:4px;color:${cor};font-weight:600;">${c.dataPrazo} · ${dias < 0 ? Math.abs(dias)+'d atraso ⚠️' : dias+'d restantes'}</div>
+            <div class="prazo-bar-bg" style="height:4px;"><div class="prazo-bar-fill" style="width:${pct}%;background:${cor};"></div></div>`;
+        } else { progresso = c.dataPrazo || '—'; }
+        return `<tr onclick="abrirDetalhe(chamados.find(x=>x.id==='${c.id}'))">
+          <td style="font-size:11px;font-weight:700;color:var(--accent);">${c.id}</td>
+          <td style="font-weight:600;">${c.tarefa}</td>
+          <td style="color:var(--muted2);">${c.solicitante}</td>
+          <td>${badge(c.importancia, IMP_COLOR[c.importancia])}</td>
+          <td style="min-width:180px;">${progresso}</td>
+          <td style="font-size:11px;color:var(--muted);">${c.ultimaAtualizacao||'-'}</td>
+          <td>${badge(c.status, STA_COLOR[c.status])}</td>
+          <td><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();abrirDetalhe(chamados.find(x=>x.id==='${c.id}'))">Atualizar</button></td>
+        </tr>`;
+      }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// NAVEGAÇÃO / UTILS
+// ═══════════════════════════════════════════════════════════════════════════════
+function setTab(tab) {
+  ['dashboard','chamados','minhas','colaboradores'].forEach(t => {
+    const v = document.getElementById('view-'+t);
+    const b = document.getElementById('tab-'+t);
+    if (v) v.style.display = t === tab ? 'block' : 'none';
+    if (b) b.classList.toggle('active', t === tab);
+  });
+  if (tab === 'minhas') renderMinhas();
+  if (tab === 'colaboradores') renderColaboradoresTabela();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// GESTÃO DE COLABORADORES
+// ═══════════════════════════════════════════════════════════════════════════════
+function salvarColaboradores() {
+  localStorage.setItem(COLAB_STORAGE_KEY, JSON.stringify(colaboradores));
+}
+
+function popularSelectsColaboradores() {
+  ['f-solicitante','f-responsavel','f-resp','dash-filtro-colab'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const currentVal = el.value;
+    // manter apenas option vazio inicial
+    while (el.options.length > 1) el.remove(1);
+    colaboradores
+      .filter(c => (c.statusColab || 'Ativo') !== 'Inativo')
+      .forEach(c => {
+        const o = document.createElement('option');
+        o.value = c.nome;
+        const st = c.statusColab || 'Ativo';
+        const icon = st === 'Ferias' ? ' 🌴' : '';
+        o.textContent = c.nome + icon;
+        el.appendChild(o);
+      });
+    el.value = currentVal;
+  });
+}
+
+function renderColaboradoresTabela() {
+  const tbody = document.getElementById('colab-tabela-body');
+  if (!tbody) return;
+  if (colaboradores.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty"><div class="empty-icon">👥</div><div class="empty-text">Nenhum usuário cadastrado ainda</div><div class="empty-sub">Os usuários aparecem aqui após se cadastrarem no sistema</div></div></td></tr>`;
+    return;
+  }
+  const STATUS_COLAB_COLOR = { Ativo:'#27a85f', Ferias:'#c9a227', Inativo:'#e44343' };
+  const STATUS_COLAB_LABEL = { Ativo:'✅ Ativo', Ferias:'🌴 Férias', Inativo:'🔴 Inativo' };
+  tbody.innerHTML = colaboradores.map((c, idx) => {
+    const recebidos = chamados.filter(x => x.responsavel === c.nome).length;
+    const abertos   = chamados.filter(x => x.solicitante === c.nome).length;
+    const st = c.statusColab || 'Ativo';
+    const stColor = STATUS_COLAB_COLOR[st] || '#27a85f';
+    const stLabel = STATUS_COLAB_LABEL[st] || st;
+    const rowOpacity = st === 'Inativo' ? 'opacity:0.55;' : '';
+    const permBadge = c.isAdmin
+      ? `<span class="badge" style="background:#c9a22722;color:#c9a227;border:1px solid #c9a22744;">👑 Admin</span>`
+      : `<span class="badge" style="background:#4a5a7822;color:#6b7fa0;border:1px solid #4a5a7844;">👤 Usuário</span>`;
+    const ehEuMesmo = c.email === currentUserEmail;
+    const acoes = currentUserAdmin ? `
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-secondary btn-sm" onclick="editarColaborador(${idx})">✏️ Editar</button>
+        ${!ehEuMesmo ? `<button class="btn btn-danger btn-sm" onclick="deletarColaborador(${idx})">🗑️</button>` : ''}
+      </div>` : `<span style="font-size:11px;color:var(--muted);">${ehEuMesmo ? '(você)' : '—'}</span>`;
+    return `<tr style="${rowOpacity}">
+      <td style="font-size:12px;color:var(--muted);">${idx+1}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,${stColor}66,${stColor}33);border:2px solid ${stColor}66;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;">${c.nome[0]}</div>
+          <span style="font-weight:600;">${c.nome}${ehEuMesmo ? ' <span style="font-size:10px;color:var(--muted);">(você)</span>' : ''}</span>
+        </div>
+      </td>
+      <td style="color:var(--muted2);font-size:12px;">${c.email}</td>
+      <td>${permBadge}</td>
+      <td>${badge(stLabel, stColor)}</td>
+      <td style="font-weight:700;color:var(--accent);">${recebidos}</td>
+      <td style="color:var(--muted2);">${abertos}</td>
+      <td style="font-size:12px;color:var(--muted);">${c.cadastradoEm || '—'}</td>
+      <td>${acoes}</td>
+    </tr>`;
+  }).join('');
+}
+
+function abrirModalColaborador(idx) {
+  if (!currentUserAdmin) { toast('Apenas administradores podem editar usuários.', true); return; }
+  colabEditandoIdx = (idx !== undefined) ? idx : null;
+  const c = (idx !== undefined) ? colaboradores[idx] : null;
+  if (!c) return;
+  document.getElementById('modal-colab-title').textContent = '✏️ Editar Usuário';
+  document.getElementById('modal-colab-sub').textContent   = `Editando: ${c.nome}`;
+  document.getElementById('colab-nome').value   = c.nome;
+  document.getElementById('colab-email').value  = c.email;
+  document.getElementById('colab-status').value = c.statusColab || 'Ativo';
+  document.getElementById('colab-admin').value  = c.isAdmin ? 'true' : 'false';
+  // Não permitir remover admin de si mesmo
+  const ehEuMesmo = c.email === currentUserEmail;
+  document.getElementById('colab-admin').disabled = ehEuMesmo;
+  if (ehEuMesmo) {
+    document.getElementById('colab-admin').title = 'Você não pode remover sua própria permissão de admin.';
+  }
+  document.getElementById('modal-colaborador').style.display = 'flex';
+}
+
+function editarColaborador(idx) { abrirModalColaborador(idx); }
+
+async function salvarColaborador() {
+  if (!currentUserAdmin) { toast('Sem permissão.', true); return; }
+  const nome       = document.getElementById('colab-nome').value.trim();
+  const email      = document.getElementById('colab-email').value.trim();
+  const statusColab = document.getElementById('colab-status').value;
+  const isAdmin    = document.getElementById('colab-admin').value === 'true';
+  if (!nome || !email) { toast('Preencha nome e email.', true); return; }
+  if (colabEditandoIdx === null) return;
+  const c = colaboradores[colabEditandoIdx];
+  if (!c || !c.dbId) { toast('Usuário não encontrado.', true); return; }
+  spinner(true);
+  try {
+    await sbFetch(SB.url('usuarios', `?id=eq.${c.dbId}`), {
+      method: 'PATCH',
+      body: JSON.stringify({ nome, email, status_colab: statusColab, is_admin: isAdmin })
+    });
+    await carregarUsuarios();
+    renderColaboradoresTabela();
+    renderColab();
+    fecharModal('modal-colaborador');
+    toast('Usuário atualizado!');
+    colabEditandoIdx = null;
+  } catch(e) { toast('Erro: ' + e.message, true); }
+  spinner(false);
+}
+
+async function deletarColaborador(idx) {
+  if (!currentUserAdmin) { toast('Sem permissão.', true); return; }
+  const c = colaboradores[idx];
+  if (!c) return;
+  if (c.email === currentUserEmail) { toast('Você não pode excluir sua própria conta aqui.', true); return; }
+  const emUsoChamado = chamados.some(x => x.responsavel === c.nome || x.solicitante === c.nome);
+  if (emUsoChamado && !confirm(`${c.nome} possui chamados vinculados. Excluir mesmo assim?`)) return;
+  if (!confirm(`Excluir permanentemente o usuário "${c.nome}"? Esta ação não pode ser desfeita.`)) return;
+  spinner(true);
+  try {
+    await sbFetch(SB.url('usuarios', `?id=eq.${c.dbId}`), { method: 'DELETE' });
+    await carregarUsuarios();
+    renderColaboradoresTabela();
+    renderColab();
+    toast('Usuário excluído.');
+  } catch(e) { toast('Erro: ' + e.message, true); }
+  spinner(false);
+}
+
+function fecharModal(id) { document.getElementById(id).style.display = 'none'; }
+
+function badge(label, color) {
+  return `<span class="badge" style="background:${color}22;color:${color};border:1px solid ${color}44;">${label}</span>`;
+}
+
+function getVal(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+function setVal(id, val) { const el = document.getElementById(id); if (el) el.value = val || ''; }
+
+function spinner(show) { document.getElementById('spinner').classList.toggle('show', show); }
+
+function toast(msg, err) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.borderColor = err ? 'rgba(228,67,67,0.3)' : 'var(--border2)';
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+function exportCSV() {
+  const headers = ['ID','Solicitante','Responsável','Tarefa','Descrição','Importância','Frequência','Recorrência','Data Solicitação','Data Prazo','Status','Última Atualização','Criado em','Nº Observações'];
+  const rows = chamados.map(c => [
+    c.id, c.solicitante, c.responsavel,
+    `"${(c.tarefa||'').replace(/"/g,'""')}"`,
+    `"${(c.descricao||'').replace(/"/g,'""')}"`,
+    c.importancia, c.frequencia, c.recorrencia||'',
+    c.dataSolicitacao, c.dataPrazo, c.status,
+    c.ultimaAtualizacao||'', c.criadoEm||'',
+    (c.observacoes||[]).length
+  ].join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url;
+  a.download = `chamados_ezproc_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+}
+
+// Fechar modal clicando fora
+document.querySelectorAll('.overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.style.display = 'none'; });
+});
+</script>
+</body>
+</html>
